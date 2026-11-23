@@ -1,0 +1,19 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.env
+.env.*
+!.env.example
+.vscode/
+.DS_Store
+Thumbs.db
+kumar96.pdf
+
+# Generated run logs
+full_output*.txt
+faraday_floquet_backup.py
+horizontal_cylinder_base.py
