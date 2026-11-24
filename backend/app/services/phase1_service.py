@@ -183,6 +183,19 @@ def run_critical(req: CriticalRequest) -> CriticalResponse:
     finite = req.geometry.shape != "infinite"
 
     _check_search_range(f, fl)
+    # Refuse implausible forcing before solving: far beyond any laboratory
+    # shaker and far outside linear theory, and the solver's per-mode growth-
+    # rate searches become slow enough to time out (a 2 m displacement at
+    # 60 Hz, about 29,000 g, took 64 s for a 40 x 20 mm box).
+    g_ = SOLVER_PROVENANCE["gravity_m_s2"]
+    if a > UNIT_CHECK_G * g_:
+        hint = (f" Displacement is entered in metres: {req.forcing.value:g} m. Did you mean {req.forcing.value:g} mm "
+                f"({req.forcing.value / 1000:g} m)?") if req.forcing.kind == "displacement" else " Check the units of the input."
+        raise SolverLimitError(
+            "FORCING_TOO_LARGE",
+            f"The applied acceleration would be {a / g_:,.0f} g ({a:,.0f} m/s²), far beyond laboratory shakers "
+            f"(about 100 g) and the range where linear theory applies.{hint}",
+            "forcing.value")
     kc_inf, ac_inf = ff.critical_infinite(f, fl)
     if finite:
         n = len(cont.modes(4.0 * kc_inf))                         # analyze()'s default search range

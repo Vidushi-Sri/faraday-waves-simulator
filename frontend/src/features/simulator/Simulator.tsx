@@ -270,7 +270,7 @@ export default function Simulator() {
 
           {error && (
             <InlineNotification kind="error" lowContrast className="notice"
-              title={error.code === "UNREACHABLE" ? "Simulator offline" : error.code === "CALCULATION_FAILED" ? "Calculation failed" : error.code === "TIMEOUT" ? "Calculation timed out" : error.code === "OUT_OF_RANGE" ? "Outside the range of the model" : error.code === "CONTAINER_TOO_LARGE" ? "Container too large" : "Could not run"}
+              title={error.code === "UNREACHABLE" ? "Simulator offline" : error.code === "CALCULATION_FAILED" ? "Calculation failed" : error.code === "TIMEOUT" ? "Calculation timed out" : error.code === "OUT_OF_RANGE" ? "Outside the range of the model" : error.code === "CONTAINER_TOO_LARGE" ? "Container too large" : error.code === "FORCING_TOO_LARGE" ? "Forcing too large" : "Could not run"}
               subtitle={`${error.message}${error.errorId ? ` Error ID ${error.errorId}.` : ""}`}
               onCloseButtonClick={() => setError(null)} />
           )}

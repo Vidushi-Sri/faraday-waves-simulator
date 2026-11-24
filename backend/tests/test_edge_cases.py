@@ -43,8 +43,15 @@ def test_container_with_no_modes_reports_none_found(client, body):
     assert res["status"] == "no_critical_mode_found" and res["critical_acceleration_m_s2"] is None
 
 
-def test_far_above_onset_and_unit_slip_are_flagged(client, body):
-    body["forcing"] = {"kind": "displacement", "value": 3.0, "unit": "m"}
+def test_implausible_forcing_is_refused_with_a_units_hint(client, body):
+    body["forcing"] = {"kind": "displacement", "value": 2.0, "unit": "m"}      # about 29,000 g
+    r = post(client, body)
+    j = r.json()
+    assert r.status_code == 422 and j["code"] == "FORCING_TOO_LARGE"
+    assert "Did you mean 2 mm" in j["message"] and "forcing.value" in j["field_errors"]
+
+
+def test_far_above_onset_is_flagged(client, body):
+    body["forcing"]["value"] = 1000.0                                          # about 11 a_c, about 100 g
     j = post(client, body).json()
-    text = " ".join(j["warnings"])
-    assert "times the onset threshold" in text and "Check the units" in text
+    assert "times the onset threshold" in " ".join(j["warnings"])
