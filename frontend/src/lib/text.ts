@@ -89,8 +89,8 @@ export function stabilityCaption(r: CriticalResponse): string {
   const finite = r.model.geometry !== "infinite";
   const a = fmt(r.results.applied_acceleration_m_s2);
   const base = finite
-    ? `Curves give the onset threshold of each wavenumber (subharmonic solid, harmonic dashed); forcing above them is shaded. Markers are the modes the container allows; filled markers are unstable at the applied acceleration (dashed line, ${a} m/s²).`
-    : `Curves give the onset threshold of each wavenumber (subharmonic solid, harmonic dashed); forcing above them is shaded. The dashed line marks the applied acceleration (${a} m/s²); where it crosses above a curve, those wavenumbers grow.`;
+    ? `Curves give the onset threshold of each wavenumber (subharmonic solid, harmonic dashed); forcing just above a curve destabilises that wavenumber. Markers are the modes the container allows; filled markers are unstable at the applied acceleration (dashed line, ${a} m/s²).`
+    : `Curves give the onset threshold of each wavenumber (subharmonic solid, harmonic dashed); forcing just above a curve destabilises that wavenumber. The dashed line marks the applied acceleration (${a} m/s²); where it crosses above a curve, those wavenumbers grow.`;
   return base;
 }
 

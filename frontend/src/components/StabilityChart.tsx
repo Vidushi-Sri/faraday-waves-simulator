@@ -5,7 +5,7 @@ import { fmt, modeLabel, responseWord, sig4 } from "../lib/text";
 import { csv, downloadSvg, downloadText, drawFrame, FONT, layoutLegend, measure, type LegendEntry } from "../lib/plot";
 import { bindAxes, downloadPng, drawPins, type Pin } from "../lib/axes";
 import { AxesToolbar, DataTip, useAxesState, useWidth, type Tip } from "./ChartTools";
-import { RESPONSE_COLOR, STATUS_FILL, UNSTABLE_FILL } from "../lib/colors";
+import { RESPONSE_COLOR, STATUS_FILL } from "../lib/colors";
 
 /**
  * Stability chart in the (k, a) plane, the convention of the solver's own
@@ -96,7 +96,6 @@ export function StabilityChart({
     const bands = finite ? [] : plots.tongues.flatMap(c => runsBelow(c.points, appliedA));
     const anyUnstableMode = plots.allowed_modes.some(m => m.critical_acceleration_m_s2 < appliedA);
     const entries: LegendEntry[] = [
-      { label: "Above onset", swatch: sg => { sg.append("rect").attr("y", -5).attr("width", 22).attr("height", 10).attr("fill", UNSTABLE_FILL); } },
       ...(sub ? [{ label: `Subharmonic${families(sub) ? ` (${families(sub)})` : ""}`, swatch: lineSw(RESPONSE_COLOR.subharmonic) }] : []),
       ...(har ? [{ label: `Harmonic${families(har) ? ` (${families(har)})` : ""}`, swatch: lineSw(RESPONSE_COLOR.harmonic, "6 4", 1.5) }] : []),
       { label: "Applied acceleration", swatch: lineSw("#161616", "5 3", 1) },
@@ -134,9 +133,7 @@ export function StabilityChart({
       if (cur.length) out.push(cur);
       return out;
     };
-    const area = d3.area<CurvePoint>().defined(defined).x(p => x(p.wavenumber_per_mm)).y0(y(y.domain()[1]) - 2000).y1(p => y(p.a_m_s2!));
     const line = d3.line<CurvePoint>().defined(defined).x(p => x(p.wavenumber_per_mm)).y(p => y(p.a_m_s2!));
-    plots.tongues.forEach(c => runs(c.points).forEach(run => plot.append("path").datum(run).attr("d", area).attr("fill", UNSTABLE_FILL)));
     plots.tongues.forEach(c => runs(c.points).forEach(run => plot.append("path").datum(run).attr("d", line).attr("fill", "none")
       .attr("stroke", RESPONSE_COLOR[c.response]).attr("stroke-width", c.response === "subharmonic" ? 2 : 1.5)
       .attr("stroke-dasharray", c.response === "harmonic" ? "6 4" : null)));
@@ -180,6 +177,11 @@ export function StabilityChart({
     }
     // region note only in the default view: once zoomed, the corner may lie inside a tongue
     if (!view) label(plot, L + 8, B - 8, "start", "#525252").text("Stable region");
+    // The solver gives each tongue's lower boundary only, so no region is
+    // shaded (that would invent an upper boundary). The unstable side is
+    // labelled just above the onset minimum, where it is certain.
+    if (!view && crit && acTag != null)
+      label(plot, x(crit.wavenumber_per_mm), y(acTag + 0.15 * (y.domain()[1] - y.domain()[0])), "middle", "#525252").text("Unstable");
 
     frame.finish();
 

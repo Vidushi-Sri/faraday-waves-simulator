@@ -140,7 +140,7 @@ export default function Simulator() {
   }
 
   const field = (k: FieldKey, label: string, helperText?: string) => (
-    <TextInput key={k} id={k} labelText={label} value={s[k]} inputMode="decimal" autoComplete="off"
+    <TextInput key={k} id={k} size="sm" labelText={label} value={s[k]} inputMode="decimal" autoComplete="off"
       helperText={helperText} invalid={!!fieldError(k)} invalidText={fieldError(k)}
       onChange={e => update(k)(e.target.value)} onBlur={() => setTouched(t => new Set(t).add(k))} />
   );
@@ -194,7 +194,7 @@ export default function Simulator() {
             <fieldset className="group">
               <GroupTitle icon={<Cube size={16} />}>Container</GroupTitle>
               <Dropdown<ShapeOption>
-                id="shape" titleText="Geometry" label="Geometry" items={SHAPE_OPTIONS}
+                id="shape" size="sm" titleText="Geometry" label="Geometry" items={SHAPE_OPTIONS}
                 itemToString={i => i?.label ?? ""}
                 selectedItem={SHAPE_OPTIONS.find(o => o.id === s.shape)}
                 onChange={({ selectedItem }) => {
@@ -221,7 +221,7 @@ export default function Simulator() {
               {field("freq", LABELS.freq)}
               <div>
                 <p className="cds--label" id="forcing-kind">Forcing input</p>
-                <ContentSwitcher aria-labelledby="forcing-kind" size="md"
+                <ContentSwitcher aria-labelledby="forcing-kind" size="sm"
                   selectedIndex={s.forcingKind === "acceleration" ? 0 : 1}
                   onChange={({ index }) => setForcingKind(index === 0 ? "acceleration" : "displacement")}>
                   <Switch name="acc" text="Acceleration" />

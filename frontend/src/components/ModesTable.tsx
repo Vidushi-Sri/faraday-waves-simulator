@@ -1,6 +1,7 @@
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableHeader, TableRow,
 } from "@carbon/react";
+import type { ReactNode } from "react";
 import type { CriticalResponse } from "../api/types";
 import { modeLabel, responseWord, sig4 } from "../lib/text";
 
@@ -22,20 +23,20 @@ export function ModesTable({ r }: { r: CriticalResponse }) {
         <Table size="sm" useZebraStyles={false} aria-label="Lowest modes">
           <TableHead>
             <TableRow>
-              <TableHeader>Mode</TableHeader>
-              <TableHeader className="num">k (mm⁻¹)</TableHeader>
-              <TableHeader className="num">λ (mm)</TableHeader>
-              <TableHeader className="num">a<sub>c</sub> at f/2 (m/s²)</TableHeader>
-              <TableHeader className="num">a<sub>c</sub> at f (m/s²)</TableHeader>
-              <TableHeader>Response</TableHeader>
-              <TableHeader>At applied a</TableHeader>
-              <TableHeader className="num">Growth rate (s⁻¹)</TableHeader>
+              <Head name="Mode" />
+              <Head num name="k" unit={<>mm<sup>−1</sup></>} />
+              <Head num name="λ" unit="mm" />
+              <Head num name={<>a<sub>c</sub>, subharmonic</>} unit={<>m/s<sup>2</sup></>} />
+              <Head num name={<>a<sub>c</sub>, harmonic</>} unit={<>m/s<sup>2</sup></>} />
+              <Head name="Response" />
+              <Head name="At applied a" />
+              <Head num name="Growth rate" unit={<>s<sup>−1</sup></>} />
             </TableRow>
           </TableHead>
           <TableBody>
             {modes.map((m, i) => (
               <TableRow key={m.label} className={i === 0 ? "is-critical" : undefined}>
-                <TableCell>{modeLabel(m.label)}</TableCell>
+                <TableCell>{m.label === "k_c" ? <>k<sub>c</sub></> : modeLabel(m.label)}</TableCell>
                 <TableCell className="num">{sig4(m.wavenumber_per_mm)}</TableCell>
                 <TableCell className="num">{sig4(m.wavelength_mm)}</TableCell>
                 <TableCell className="num">{sig4(m.threshold_subharmonic_m_s2)}</TableCell>
@@ -52,5 +53,18 @@ export function ModesTable({ r }: { r: CriticalResponse }) {
         <p className="card-foot">--: growth rate not available (not computed for a ≤ 0.5 a<sub>c</sub>, or withheld because it failed the solver self-check).</p>
       )}
     </section>
+  );
+}
+
+/** Uniform two-line header: name on the first line, unit (or a blank line) on
+ *  the second, so every column header has the same height and baseline. */
+function Head({ name, unit, num }: { name: ReactNode; unit?: ReactNode; num?: boolean }) {
+  return (
+    <TableHeader className={num ? "num" : undefined}>
+      <span className="th">
+        <span className="th__name">{name}</span>
+        <span className="th__unit">{unit ?? "\u00a0"}</span>
+      </span>
+    </TableHeader>
   );
 }
