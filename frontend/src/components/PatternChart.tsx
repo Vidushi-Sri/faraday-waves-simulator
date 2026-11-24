@@ -126,7 +126,7 @@ export function PatternChart({ r }: { r: CriticalResponse }) {
         g.append("text").attr("x", cbX + cbW + 7).attr("y", cb(t) + 4).attr("font-size", 12).attr("fill", "#393939").text(fmtT(t));
       });
       g.append("text").attr("transform", `translate(${cbX + cbW + 40},${(box.T + box.B) / 2}) rotate(90)`)
-        .attr("text-anchor", "middle").attr("font-size", 12).attr("fill", "#161616").text("η (arb.)");
+        .attr("text-anchor", "middle").attr("font-size", 12).attr("fill", "#161616").text("η (arbitrary units)");
 
       pts = [];
       ys.forEach((yv, j) => xs.forEach((xv, i) => {

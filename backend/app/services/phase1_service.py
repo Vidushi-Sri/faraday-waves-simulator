@@ -167,7 +167,7 @@ def _check_search_range(f: float, fl) -> None:
         raise SolverLimitError(
             "OUT_OF_RANGE",
             f"Outside the model's wavenumber range: the expected onset wavelength is about "
-            f"{2 * math.pi / k1:.3g} m, but the solver searches wavelengths from "
+            f"{2 * math.pi / k1:.3g} m, but the calculation covers wavelengths from "
             f"{2 * math.pi / kmax * 1e3:.3g} mm to {2 * math.pi / kmin * 1e3:.3g} mm. "
             "A result here would be unreliable, so none is shown.",
             "frequency_hz")
