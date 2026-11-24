@@ -22,6 +22,10 @@ SOLVER_FILE = REPO_ROOT / "faraday_floquet.py"
 
 
 def _git_commit() -> str | None:
+    # deployments without git history pass the commit in an environment variable
+    import os
+    if os.getenv("SOURCE_COMMIT"):
+        return os.environ["SOURCE_COMMIT"]
     try:
         out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=REPO_ROOT,
                              capture_output=True, text=True, timeout=5)
