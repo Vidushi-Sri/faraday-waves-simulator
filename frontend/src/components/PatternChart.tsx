@@ -56,7 +56,7 @@ export function PatternChart({ r }: { r: CriticalResponse }) {
       x.range([box.L, box.R]); y.range([box.B, box.T]);
       svg.attr("width", W).attr("height", H).attr("viewBox", `0 0 ${W} ${H}`).attr("font-family", FONT).style("background", "#fff");
       const frame = drawFrame(g, x, y, { xTicks, yTicks, xFmt: fmtT, yFmt: fmtT, M, W, H,
-        xTitle: "Position x (mm)", yTitle: "Surface elevation η (arb.)" });
+        xTitle: "Position x (mm)", yTitle: "Surface elevation η (arbitrary units)" });
       svg.append("defs").append("clipPath").attr("id", clipId)
         .append("rect").attr("x", box.L).attr("y", box.T).attr("width", box.R - box.L).attr("height", box.B - box.T);
       const plot = g.append("g").attr("clip-path", `url(#${clipId})`).append("g");

@@ -178,6 +178,17 @@ export default function Simulator() {
           <p>Infinite layer, two-dimensional channel, rectangular box and upright cylinder.</p>
           <h3>Scope</h3>
           <p>Linear theory predicts onset and early growth, not saturated amplitudes or pattern selection. Side walls are ideal, so thresholds for small containers are lower bounds.</p>
+          <h3>Terms used here</h3>
+          <dl className="about-panel__terms">
+            <dt>Onset threshold a<sub>c</sub></dt><dd>The smallest vertical acceleration of the container at which the flat surface becomes unstable.</dd>
+            <dt>Applied acceleration a</dt><dd>The peak vertical acceleration of the container, a cos 2πft.</dd>
+            <dt>Wavenumber k</dt><dd>2π divided by the wavelength λ of a surface wave.</dd>
+            <dt>Critical mode</dt><dd>The wave pattern that becomes unstable first, at a = a<sub>c</sub>.</dd>
+            <dt>Subharmonic / harmonic</dt><dd>The surface oscillates at half the drive frequency (f/2) or at the drive frequency (f).</dd>
+            <dt>Tongue</dt><dd>The region of (k, a) in which a given response grows; each curve on the stability chart is its lower boundary.</dd>
+            <dt>Growth rate s</dt><dd>Disturbances grow like e<sup>st</sup>: positive s grows, negative s decays.</dd>
+            <dt>Allowed mode</dt><dd>A wave pattern that fits the container walls; only these exist in a finite container.</dd>
+          </dl>
           <h3>Reproducibility</h3>
           <p>Exported data (CSV) and figures (SVG, PNG) record all inputs and the model version.</p>
         </HeaderPanel>

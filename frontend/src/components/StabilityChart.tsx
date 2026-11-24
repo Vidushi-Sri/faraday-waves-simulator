@@ -84,7 +84,9 @@ export function StabilityChart({
     x.range([L, R]); y.range([B, T]);
 
     // legend (part of the figure, so exports carry it)
-    const families = (c: Curve) => c.minima.map(m => m.response_frequency).join(", ");
+    const families = (c: Curve) => c.minima
+      .filter(m => m.a_m_s2 <= y.domain()[1] && m.wavenumber_per_mm >= x.domain()[0] && m.wavenumber_per_mm <= x.domain()[1])
+      .map(m => m.response_frequency).join(", ");
     const sub = plots.tongues.find(c => c.response === "subharmonic");
     const har = plots.tongues.find(c => c.response === "harmonic");
     const lineSw = (color: string, dash?: string, w = 2) => (sg: SG) => {
@@ -102,7 +104,7 @@ export function StabilityChart({
       ...(crit ? [{ label: finite ? "Critical mode" : "Onset threshold", swatch: (sg: SG) => { sg.append("circle").attr("cx", 11).attr("r", 5).attr("fill", "#fff").attr("stroke", "#161616").attr("stroke-width", 1.5); } }] : []),
       ...(finite ? [{ label: "Allowed mode", swatch: dotSw("#fff", "#6f6f6f") }] : []),
       ...(finite && anyUnstableMode ? [{ label: "Unstable mode", swatch: dotSw(hot, hot) }] : []),
-      ...(!finite && bands.length ? [{ label: "Unstable interval", swatch: (sg: SG) => { sg.append("line").attr("x1", 2).attr("x2", 20).attr("stroke", hot).attr("stroke-width", 2); [2, 20].forEach(cx => sg.append("circle").attr("cx", cx).attr("r", 2.5).attr("fill", "#fff").attr("stroke", hot).attr("stroke-width", 1.5)); } }] : []),
+      ...(!finite && bands.length ? [{ label: "Growing wavenumbers", swatch: (sg: SG) => { sg.append("line").attr("x1", 2).attr("x2", 20).attr("stroke", hot).attr("stroke-width", 2); [2, 20].forEach(cx => sg.append("circle").attr("cx", cx).attr("r", 2.5).attr("fill", "#fff").attr("stroke", hot).attr("stroke-width", 1.5)); } }] : []),
     ];
     const legend = layoutLegend(g, entries, 16, W - 16);
     const HT = H + 10 + legend.height + 1;
@@ -175,6 +177,18 @@ export function StabilityChart({
       plot.append("line").attr("x1", L - 4000).attr("x2", ox - 6).attr("y1", oy).attr("y2", oy).attr("stroke", "#393939").attr("stroke-dasharray", "1 2");
       plot.append("circle").attr("cx", ox).attr("cy", oy).attr("r", 5).attr("fill", "none").attr("stroke", "#161616").attr("stroke-width", 1.5);
     }
+    // Where the solver's curve jumps upward between neighbouring samples, the
+    // tongue's lower and upper boundaries have met and the boundary folds back.
+    // The solver returns only the lower branch, so say so at that point.
+    if (!view) plots.tongues.forEach(c => c.points.forEach((p, i) => {
+      const q = c.points[i + 1];
+      if (p.a_m_s2 == null || !q || (q.a_m_s2 != null && q.a_m_s2 - p.a_m_s2 <= jump)) return;
+      const px = x(p.wavenumber_per_mm), py = y(p.a_m_s2);
+      if (px < L || px > R - 60 || py < T + 30 || py > B) return;
+      plot.append("circle").attr("cx", px).attr("cy", py).attr("r", 2.5).attr("fill", RESPONSE_COLOR[c.response]);
+      label(plot, px + 8, py + 4, "start", "#525252").text("boundary folds back");
+      label(plot, px + 8, py + 18, "start", "#8d8d8d").text("(upper branch not computed)");
+    }));
     // region note only in the default view: once zoomed, the corner may lie inside a tongue
     if (!view) label(plot, L + 8, B - 8, "start", "#525252").text("Stable region");
     // The solver gives each tongue's lower boundary only, so no region is
@@ -266,7 +280,7 @@ export function StabilityChart({
             rows.push([responseWord(c.response), `${sig4(p.a_m_s2)} m/s²`, RESPONSE_COLOR[c.response]]);
           } else {
             dots[j].attr("visibility", "hidden");
-            rows.push([responseWord(c.response), p.a_m_s2 == null ? "none" : "off scale", RESPONSE_COLOR[c.response]]);
+            rows.push([responseWord(c.response), p.a_m_s2 == null ? "no threshold" : `${sig4(p.a_m_s2)} m/s² (above plot)`, RESPONSE_COLOR[c.response]]);
           }
         });
         hair.attr("x1", px).attr("x2", px).attr("visibility", "visible");

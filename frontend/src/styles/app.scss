@@ -60,6 +60,11 @@ body { letter-spacing: 0.16px; }
   p { margin: 0 0 $spacing-05; color: var(--ink-2); }
   h3 { font-size: 0.875rem; font-weight: 600; margin: 0 0 $spacing-02; }
 }
+.about-panel__terms {
+  margin: 0 0 $spacing-05; font-size: 0.8125rem;
+  dt { font-weight: 600; color: var(--ink); margin-top: $spacing-03; }
+  dd { margin: $spacing-01 0 0; color: var(--ink-2); line-height: 1.4; }
+}
 .about-panel__title { font-size: 1.25rem; font-weight: 400; margin: 0 0 $spacing-04; }
 .about-panel__meta {
   margin: 0; font-size: 0.75rem;
