@@ -87,7 +87,9 @@ export function drawPins(g: G, pins: Pin[], x: Lin, y: Lin, box: Box, onRemove: 
   pins.forEach((p, i) => {
     const px = x(p.x), py = y(p.y);
     if (px < box.L || px > box.R || py < box.T || py > box.B) return;
-    const pg = g.append("g").style("cursor", "pointer").on("click", (ev: MouseEvent) => { ev.stopPropagation(); onRemove(i); });
+    const pg = g.append("g").attr("class", "pin").style("cursor", "pointer")
+      .on("click", (ev: MouseEvent) => { ev.stopPropagation(); onRemove(i); });
+    pg.append("title").text("Click to remove this data tip");
     pg.append("rect").attr("x", px - 4).attr("y", py - 4).attr("width", 8).attr("height", 8)
       .attr("fill", "#fff").attr("stroke", "#161616").attr("stroke-width", 1.5);
     const lines = [p.title, ...p.rows.map(([k, v]) => `${k}  ${v}`)];
@@ -100,8 +102,11 @@ export function drawPins(g: G, pins: Pin[], x: Lin, y: Lin, box: Box, onRemove: 
     let bx = px + 10, by = py - h - 6;
     if (bx + w > box.R) bx = px - 10 - w;
     if (by < box.T) by = py + 10;
-    tg.insert("rect", "text").attr("x", -8).attr("y", bb.y - 5).attr("width", w).attr("height", h)
+    tg.insert("rect", "text").attr("x", -8).attr("y", bb.y - 5).attr("width", w + 18).attr("height", h)
       .attr("fill", "#fff").attr("stroke", "#161616");
+    // close control, top-right of the box (the whole tip is also clickable)
+    tg.append("text").attr("x", w - 4).attr("y", bb.y + 9).attr("font-family", FONT).attr("font-size", 14)
+      .attr("fill", "#525252").attr("text-anchor", "middle").text("×");
     tg.attr("transform", `translate(${bx + 8},${by - bb.y + 5})`);
   });
 }

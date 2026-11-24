@@ -150,13 +150,19 @@ export function PatternChart({ r }: { r: CriticalResponse }) {
         const cursor = g.append("rect").attr("width", 8).attr("height", 8).attr("fill", "none")
           .attr("stroke", "#161616").attr("stroke-width", 1.5).attr("visibility", "hidden").attr("pointer-events", "none");
         svg.on("pointermove", (ev: PointerEvent) => {
+          if ((ev.target as Element | null)?.closest?.(".pin")) { cursor.attr("visibility", "hidden"); setTip(null); return; }
           const q = nearest(ev);
           if (!q) { cursor.attr("visibility", "hidden"); setTip(null); return; }
           cursor.attr("x", q.px - 4).attr("y", q.py - 4).attr("visibility", "visible");
           setTip({ left: q.px, top: q.py - 10, flip: q.px > W * 0.6, title: q.pin.title, rows: q.pin.rows });
         });
         svg.on("pointerleave", () => { cursor.attr("visibility", "hidden"); setTip(null); });
-        svg.on("click", (ev: MouseEvent) => { const q = nearest(ev); if (q) setPins(ps => [...ps, q.pin]); });
+        svg.on("click", (ev: MouseEvent) => {
+          if ((ev.target as Element | null)?.closest?.(".pin")) return;
+          const q = nearest(ev);
+          if (q) setPins(ps => ps.some(p => p.x === q.pin.x && p.y === q.pin.y)
+            ? ps.filter(p => !(p.x === q.pin.x && p.y === q.pin.y)) : [...ps, q.pin]);
+        });
       } else {
         setTip(null);
         bindAxes({ svg, g, content: plot, x, y, box, mode, setView });
@@ -176,7 +182,8 @@ export function PatternChart({ r }: { r: CriticalResponse }) {
   if (!pat) return <p className="chart-empty">No critical mode, so there is no onset pattern to show.</p>;
   return (
     <div>
-      <AxesToolbar active={mode !== "datatip" || !!view} mode={mode} setMode={ax.setMode} canRestore={!!view} onRestore={() => setView(null)}
+      <AxesToolbar active={mode !== "datatip" || !!view || pins.length > 0} mode={mode} setMode={ax.setMode}
+        pinCount={pins.length} onClearPins={() => setPins([])} canRestore={!!view} onRestore={() => setView(null)}
         onPng={() => downloadPng(ref.current, "onset_pattern.png")}
         onSvg={() => downloadSvg(ref.current, "onset_pattern.svg")} onCsv={exportCsv} />
       <div ref={wrapRef} className="plot">

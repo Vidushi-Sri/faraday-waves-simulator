@@ -190,7 +190,9 @@ export function StabilityChart({
       label(plot, px + 8, py + 18, "start", "#8d8d8d").text("(upper branch not computed)");
     }));
     // region note only in the default view: once zoomed, the corner may lie inside a tongue
-    if (!view) label(plot, L + 8, B - 8, "start", "#525252").text("Stable region");
+    // keep the label clear of the applied line when that line runs near the bottom
+    const stableY = Math.abs(ay - (B - 12)) < 16 ? Math.max(T + 14, ay - 10) : B - 8;
+    if (!view) label(plot, L + 8, stableY, "start", "#525252").text("Stable region");
     // The solver gives each tongue's lower boundary only, so no region is
     // shaded (that would invent an upper boundary). The unstable side is
     // labelled just above the onset minimum, where it is certain.
@@ -258,6 +260,7 @@ export function StabilityChart({
       let dragging = false;
       svg.on("pointermove", (ev: PointerEvent) => {
         if (dragging) return;
+        if ((ev.target as Element | null)?.closest?.(".pin")) { hide(); return; }          // over a pinned tip: keep it readable
         const [mx, my] = d3.pointer(ev, svgEl);
         if (mx < L || mx > R || my < T || my > B) { hide(); return; }
         const q = nearest(ev);
@@ -289,8 +292,11 @@ export function StabilityChart({
       });
       svg.on("pointerleave", hide);
       svg.on("click", (ev: MouseEvent) => {
+        if ((ev.target as Element | null)?.closest?.(".pin")) return;                        // the pin's own handler removes it
         const q = nearest(ev);
-        if (q) setPins(ps => ps.some(p => p.x === q.pin.x && p.y === q.pin.y) ? ps : [...ps, q.pin]);
+        // clicking a point toggles its tip, as in MATLAB
+        if (q) setPins(ps => ps.some(p => p.x === q.pin.x && p.y === q.pin.y)
+          ? ps.filter(p => !(p.x === q.pin.x && p.y === q.pin.y)) : [...ps, q.pin]);
       });
       if (draggable && aVisible) {
         // While dragging only the line, its label and handle move (no React
@@ -347,7 +353,8 @@ export function StabilityChart({
 
   return (
     <div>
-      <AxesToolbar active={mode !== "datatip" || !!view} mode={mode} setMode={ax.setMode} canRestore={!!view} onRestore={() => setView(null)}
+      <AxesToolbar active={mode !== "datatip" || !!view || pins.length > 0} mode={mode} setMode={ax.setMode}
+        pinCount={pins.length} onClearPins={() => setPins([])} canRestore={!!view} onRestore={() => setView(null)}
         onPng={() => downloadPng(ref.current, "stability_chart.png")}
         onSvg={() => downloadSvg(ref.current, "stability_chart.svg")} onCsv={exportCsv} />
       <div ref={wrapRef} className="plot">

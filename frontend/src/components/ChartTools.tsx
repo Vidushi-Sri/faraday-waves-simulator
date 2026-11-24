@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, OverflowMenu, OverflowMenuItem } from "@carbon/react";
-import { ChartPoint, Download, Home, Move, ZoomIn, ZoomOut } from "@carbon/icons-react";
+import { ChartPoint, Download, Erase, Home, Move, ZoomIn, ZoomOut } from "@carbon/icons-react";
 import type { AxesMode, Pin, View } from "../lib/axes";
 
 /** Track a container's pixel width so charts render at true size and chart
@@ -26,6 +26,13 @@ export function useAxesState(resetKey: unknown) {
   const [pins, setPins] = useState<Pin[]>([]);
   const key = useRef(resetKey);
   if (key.current !== resetKey) { key.current = resetKey; if (view) setView(null); if (pins.length) setPins([]); }
+  // Esc clears pinned data tips
+  useEffect(() => {
+    if (!pins.length) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setPins([]); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [pins.length]);
   return { mode, setMode, view, setView, pins, setPins };
 }
 
@@ -37,8 +44,8 @@ const MODES: { mode: AxesMode; label: string; Icon: typeof Move }[] = [
 ];
 
 /** Axes toolbar, MATLAB layout: interaction modes, restore view, export. */
-export function AxesToolbar({ active, mode, setMode, onRestore, canRestore, onPng, onSvg, onCsv }: {
-  active?: boolean; mode: AxesMode; setMode: (m: AxesMode) => void; onRestore: () => void; canRestore: boolean;
+export function AxesToolbar({ active, mode, setMode, onRestore, canRestore, onPng, onSvg, onCsv, pinCount = 0, onClearPins }: {
+  active?: boolean; pinCount?: number; onClearPins?: () => void; mode: AxesMode; setMode: (m: AxesMode) => void; onRestore: () => void; canRestore: boolean;
   onPng: () => void; onSvg: () => void; onCsv: () => void;
 }) {
   return (
@@ -48,6 +55,10 @@ export function AxesToolbar({ active, mode, setMode, onRestore, canRestore, onPn
           tooltipPosition="bottom" isSelected={mode === m} aria-pressed={mode === m} onClick={() => setMode(m)} />
       ))}
       <span className="axes-toolbar__sep" aria-hidden="true" />
+      {pinCount > 0 && onClearPins && (
+        <Button kind="ghost" size="sm" hasIconOnly renderIcon={Erase} iconDescription={`Clear ${pinCount} data tip${pinCount > 1 ? "s" : ""} (Esc)`}
+          tooltipPosition="bottom" onClick={onClearPins} />
+      )}
       <Button kind="ghost" size="sm" hasIconOnly renderIcon={Home} iconDescription="Restore view"
         tooltipPosition="bottom" disabled={!canRestore} onClick={onRestore} />
       <OverflowMenu renderIcon={Download} size="sm" flipped iconDescription="Export" aria-label="Export">
