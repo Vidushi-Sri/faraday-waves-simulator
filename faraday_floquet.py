@@ -67,10 +67,13 @@ def _tanh_stable(z):
     return (1 - e) / (1 + e)
 
 
+
 def A_n(n, k, w, alpha, s, fl):
     """Kumar eq. 3.17, evaluated using scaled hyperbolic functions."""
 
-    if alpha == 0 and n == 0:
+    # Special limiting expression only at s = 0,
+    # alpha = 0, n = 0.
+    if alpha == 0 and n == 0 and s == 0.0:
         return 2 / k * (
             fl.g * k + fl.sigma / fl.rho * k**3
         )
@@ -81,14 +84,12 @@ def A_n(n, k, w, alpha, s, fl):
     C = q * (q**4 + 2 * q**2 * k**2 + 5 * k**4)
     D = k * (q**4 + 6 * q**2 * k**2 + k**4)
 
-    # Stable hyperbolic functions
     sech_qh = _sech_stable(q * h)
     sech_kh = _sech_stable(k * h)
 
     tanh_qh = _tanh_stable(q * h)
     tanh_kh = _tanh_stable(k * h)
 
-    # Numerator and denominator divided by cosh(q*h)*cosh(k*h)
     num_scaled = (
         4 * q * k**2 * (q**2 + k**2) * sech_qh * sech_kh
         - C
@@ -102,6 +103,7 @@ def A_n(n, k, w, alpha, s, fl):
         + fl.sigma / fl.rho * k**3
         - fl.nu**2 * num_scaled / den_scaled
     )
+
 
 
 def _orders(alpha, N):
