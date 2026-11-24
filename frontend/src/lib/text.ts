@@ -97,9 +97,26 @@ export function stabilityCaption(r: CriticalResponse): string {
 export function patternCaption(r: CriticalResponse): string {
   const m = r.results.critical_mode;
   if (!m) return "No critical mode, so there is no onset pattern.";
-  return r.plots?.pattern?.kind === "field"
+  const base = r.plots?.pattern?.kind === "field"
     ? `Top view of the critical mode ${modeLabel(m.label)} at onset. Red: surface raised; blue: surface lowered (arbitrary amplitude).`
     : "Surface profile of the critical mode at onset over one wavelength (arbitrary amplitude).";
+  return base + nearTieNote(r);
+}
+
+// modes whose threshold lies within 0.1% of the critical one; linear theory cannot pick between them
+export function nearTieNote(r: CriticalResponse): string {
+  const m = r.results.critical_mode;
+  const ac = m?.critical_acceleration_m_s2;
+  const all = r.plots?.allowed_modes ?? [];
+  if (!m || ac == null || all.length === 0) return "";
+  const ties = all
+    .filter((x) => x.label !== m.label && Math.abs(x.critical_acceleration_m_s2 - ac) <= 1e-3 * ac)
+    .sort((a, b) => a.critical_acceleration_m_s2 - b.critical_acceleration_m_s2);
+  if (ties.length === 0) return "";
+  // keep only the index pair, e.g. "(22, 4)", so the list reads cleanly
+  const names = ties.slice(0, 3).map((x) => modeLabel(x.label).replace(/^.*=\s*/, "")).join(", ");
+  const more = ties.length > 3 ? ` and ${ties.length - 3} more` : "";
+  return ` ${ties.length === 1 ? "Mode" : "Modes"} ${names}${more} ${ties.length === 1 ? "has a threshold" : "have thresholds"} within 0.1% of this one, so linear theory alone cannot say which pattern appears first.`;
 }
 
 export function provenanceLine(p: Provenance): string {

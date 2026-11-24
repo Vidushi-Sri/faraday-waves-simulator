@@ -30,6 +30,7 @@ MAX_MODES = 2500
 TONGUE_SAMPLES = 240        # points per tongue curve over plot_tongues' k range
 PATTERN_LINE_N = 241        # same resolution as faraday_floquet.plot_mode
 PATTERN_FIELD_N = 81
+PATTERN_FIELD_MAX = 161
 
 
 class SolverLimitError(Exception):
@@ -97,10 +98,13 @@ def _pattern(req: CriticalRequest, cont, crit: Mode) -> Pattern:
         v = np.asarray(cont.pattern(k, label, xs, np.zeros_like(xs)), float)
         m = np.nanmax(np.abs(v)) or 1.0
         return Pattern(kind="line", x_mm=(xs * 1e3).tolist(), values=(v / m).tolist())
+    # about 16 grid points per wavelength across the container, between 81 and 161 points per side
+    span = 2 * g.R if g.shape == "cylinder" else max(g.Lx, g.Ly)
+    n = int(min(PATTERN_FIELD_MAX, max(PATTERN_FIELD_N, math.ceil(16 * span * k / (2 * math.pi)) + 1)))
     if g.shape == "cylinder":
-        xs = ys = np.linspace(-g.R, g.R, PATTERN_FIELD_N)
+        xs = ys = np.linspace(-g.R, g.R, n)
     else:
-        xs, ys = np.linspace(0, g.Lx, PATTERN_FIELD_N), np.linspace(0, g.Ly, PATTERN_FIELD_N)
+        xs, ys = np.linspace(0, g.Lx, n), np.linspace(0, g.Ly, n)
     X, Y = np.meshgrid(xs, ys)
     P = np.asarray(cont.pattern(k, label, X, Y), float)
     m = np.nanmax(np.abs(P)) or 1.0

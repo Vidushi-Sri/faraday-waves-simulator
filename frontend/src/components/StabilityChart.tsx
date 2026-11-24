@@ -167,10 +167,13 @@ export function StabilityChart({
       [k0, k1].forEach(k => gb.append("circle").attr("cx", x(k)).attr("cy", ay).attr("r", 3)
         .attr("fill", "#fff").attr("stroke", hot).attr("stroke-width", 1.5));
     });
+    // many allowed modes (large containers) would bead into a thick band, so draw them as small dots
+    const dense = plots.allowed_modes.length > 120;
     plots.allowed_modes.forEach((m: AllowedMode) => {
       const un = m.critical_acceleration_m_s2 < appliedA;
-      plot.append("circle").attr("cx", x(m.wavenumber_per_mm)).attr("cy", y(m.critical_acceleration_m_s2)).attr("r", 3.5)
-        .attr("fill", un ? hot : "#fff").attr("stroke", un ? hot : RESPONSE_COLOR[m.response]).attr("stroke-width", 1.5);
+      const c = plot.append("circle").attr("cx", x(m.wavenumber_per_mm)).attr("cy", y(m.critical_acceleration_m_s2));
+      if (dense) c.attr("r", 1.6).attr("fill", un ? hot : RESPONSE_COLOR[m.response]).attr("fill-opacity", 0.75);
+      else c.attr("r", 3.5).attr("fill", un ? hot : "#fff").attr("stroke", un ? hot : RESPONSE_COLOR[m.response]).attr("stroke-width", 1.5);
     });
     if (crit && acTag != null) {
       const ox = x(crit.wavenumber_per_mm), oy = y(acTag);
