@@ -123,12 +123,16 @@ body { letter-spacing: 0.16px; }
 .run-params__item dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
 .run-params__prov { font-size: 0.75rem; letter-spacing: 0.32px; color: var(--ink-3); margin: $spacing-02 0 0; }
 
+// start screen: full column width like the result cards, two equal halves
 .empty {
-  display: flex; align-items: center; gap: $spacing-08; flex-wrap: wrap;
-  background: var(--canvas); border: 1px solid var(--line); padding: $spacing-08 $spacing-07; max-width: 960px;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: $spacing-08;
+  background: var(--canvas); border: 1px solid var(--line); padding: $spacing-09 $spacing-08;
 }
-.schematic { flex: none; max-width: 100%; height: auto; }
-.empty__text { flex: 1; min-width: 260px; max-width: 46ch; }
+.schematic { justify-self: center; width: 100%; max-width: 480px; height: auto; }
+.empty__text { max-width: 52ch; }
+@media (max-width: 1056px) {
+  .empty { grid-template-columns: 1fr; padding: $spacing-07 $spacing-06; }
+}
 .empty__title { font-size: 1.5rem; font-weight: 400; line-height: 1.33; margin: 0 0 $spacing-04; }
 .empty__text > p { font-size: 0.875rem; line-height: 1.5; color: var(--ink-2); margin: 0 0 $spacing-06; }
 .empty__text > p.empty__note { font-size: 0.75rem; letter-spacing: 0.32px; color: var(--ink-3); margin: $spacing-04 0 0; }
