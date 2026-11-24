@@ -212,7 +212,25 @@ def run_critical(req: CriticalRequest) -> CriticalResponse:
 
     warnings: list[str] = []
     no_modes = finite and n == 0
-    res = None if no_modes else ff.analyze(a, f, fl, cont)
+    # Far above onset the solver would run one growth-rate search per unstable
+    # mode (over a thousand in a large cylinder), which can take minutes, and
+    # linear growth rates are not predictive there anyway. Thresholds do not
+    # depend on a, so analyze() at a = 0 returns them with no growth searches;
+    # the unstable flags are then set with the same rule analyze() uses (a > a_c).
+    far = False
+    if no_modes:
+        res = None
+    elif a > NONLINEAR_FACTOR * ac_inf:
+        res = ff.analyze(0.0, f, fl, cont)
+        if a > NONLINEAR_FACTOR * res["first"]["a_c"]:
+            far = True
+            for r in res["modes"]:            # "first" is the same row as modes[0]
+                r["unstable"] = bool(a > r["a_c"])
+            res["unstable"] = [r for r in res["modes"] if r["unstable"]]
+        else:
+            res = ff.analyze(a, f, fl, cont)
+    else:
+        res = ff.analyze(a, f, fl, cont)
     if res:
         rejected = _verify_growth_rates(res, a, f, fl)
         if rejected:
@@ -230,14 +248,15 @@ def run_critical(req: CriticalRequest) -> CriticalResponse:
     unstable = [r for r in (res["unstable"] if res else []) if np.isfinite(r["s"])]
     fastest = _mode(max(unstable, key=lambda r: r["s"])) if unstable else None
 
-    if crit and crit.growth_rate_per_s is None and a_c is not None:
+    if crit and crit.growth_rate_per_s is None and a_c is not None and not far:
         warnings.append("Growth rate is computed only for a > 0.5 a_c.")
     # range-of-validity guards: correct arithmetic, physically meaningless input
     g = SOLVER_PROVENANCE["gravity_m_s2"]
     if a > NONLINEAR_FACTOR * (a_c or float("inf")):
         warnings.append(
             f"The applied acceleration is {a / a_c:,.0f} times the onset threshold. Linear theory describes onset and early "
-            "growth only; at this forcing the motion is strongly nonlinear, so growth rates are not predictive.")
+            "growth only; at this forcing the motion is strongly nonlinear, so growth rates are not shown. "
+            "Thresholds and the critical mode are unaffected.")
     if a > UNIT_CHECK_G * g:
         warnings.append(
             f"The applied acceleration is {a / g:,.0f} g, far beyond laboratory shakers (typically up to about 100 g). "

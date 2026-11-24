@@ -55,3 +55,35 @@ def test_far_above_onset_is_flagged(client, body):
     body["forcing"]["value"] = 1000.0                                          # about 11 a_c, about 100 g
     j = post(client, body).json()
     assert "times the onset threshold" in " ".join(j["warnings"])
+
+
+def test_far_above_onset_matches_solver_thresholds_and_flags(client, body):
+    # 10 mm square box at 600 m/s^2, about 6.3 a_c: growth rates are skipped,
+    # everything else must equal the solver's own analyze() at that forcing
+    a = 600.0
+    body["forcing"]["value"] = a
+    body["geometry"] = {"shape": "box", "Lx": 0.01, "Ly": 0.01}
+    j = post(client, body).json()
+    ref = ff.analyze(a, 60.0, ff.Fluid(1e-4, 1220.0, 0.065, 0.0029), ff.Box(0.01, 0.01))
+    got = j["results"]["lowest_modes"]
+    assert [m["label"] for m in got] == [str(r["mode"]) for r in ref["modes"]]
+    for m, r in zip(got, ref["modes"]):
+        assert m["critical_acceleration_m_s2"] == pytest.approx(r["a_c"], rel=1e-12)
+        assert m["unstable"] == r["unstable"] and m["growth_rate_per_s"] is None
+    assert j["results"]["status"] == "unstable"
+    assert "growth rates are not shown" in " ".join(j["warnings"])
+
+
+def test_strong_forcing_in_a_large_cylinder_finishes_quickly(client, body):
+    # 0.05 m displacement at 60 Hz (about 720 g) in a 50 mm cylinder used to run past 60 s
+    import time
+    body["forcing"] = {"kind": "displacement", "value": 0.05, "unit": "m"}
+    body["depth_m"] = 0.08
+    body["geometry"] = {"shape": "cylinder", "R": 0.05}
+    body["include_plot_data"] = True
+    t = time.perf_counter()
+    r = post(client, body)
+    assert r.status_code == 200 and time.perf_counter() - t < 30
+    res = r.json()["results"]
+    assert res["critical_mode"]["label"] == "(m,s)=(16,6)"
+    assert res["critical_acceleration_m_s2"] == pytest.approx(81.533, rel=1e-4)

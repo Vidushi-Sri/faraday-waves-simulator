@@ -26,7 +26,8 @@ from .services.phase1_service import SolverLimitError, run_critical
 from .solver_bridge import SOLVER_PROVENANCE
 
 API_VERSION = "1.0.0"
-SOLVE_TIMEOUT_S = float(os.getenv("SOLVE_TIMEOUT_S", "60"))
+# below the hosting platform's 60 s function limit, so our own message reaches the page first
+SOLVE_TIMEOUT_S = float(os.getenv("SOLVE_TIMEOUT_S", "50"))
 ORIGINS = [o.strip() for o in os.getenv("FRONTEND_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",") if o.strip()]
 
 log = logging.getLogger("faraday.api")

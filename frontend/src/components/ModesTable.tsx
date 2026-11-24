@@ -92,7 +92,7 @@ function LowestModes({ r }: { r: CriticalResponse }) {
         </Table>
       </TableContainer>
       {modes.some(m => m.growth_rate_per_s == null) && (
-        <p className="card-foot">A dash means no growth rate is shown: it is not computed for a ≤ 0.5 a<sub>c</sub>, or it failed the self-check.</p>
+        <p className="card-foot">A dash means no growth rate is shown: it is not computed for a ≤ 0.5 a<sub>c</sub> or a &gt; 5 a<sub>c</sub>, or it failed the self-check.</p>
       )}
     </section>
   );

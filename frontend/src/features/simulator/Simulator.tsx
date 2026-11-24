@@ -308,7 +308,7 @@ export default function Simulator() {
                   meta={crit ? (crit.response === "subharmonic" ? `Oscillates at ${responseFreq(crit.response)}, half the drive frequency` : `Oscillates at ${responseFreq(crit.response)}, the drive frequency`) : ""} />
                 <Stat label="Growth rate s" value={crit?.growth_rate_per_s == null ? "--" : `${crit.growth_rate_per_s > 0 ? "+" : ""}${fmt(crit.growth_rate_per_s)}`}
                   unit={crit?.growth_rate_per_s == null ? "" : "s⁻¹"}
-                  meta={crit?.growth_rate_per_s == null ? ((res.results.ratio_applied_to_critical ?? 0) <= 0.5 ? "Computed only for a > 0.5 a_c" : "Withheld: failed the self-check") : crit.growth_rate_per_s > 0 ? "Disturbances grow" : "Disturbances decay"}
+                  meta={crit?.growth_rate_per_s == null ? ((res.results.ratio_applied_to_critical ?? 0) <= 0.5 ? "Computed only for a > 0.5 a_c" : (res.results.ratio_applied_to_critical ?? 0) > 5 ? "Not shown above 5 a_c (nonlinear)" : "Withheld: failed the self-check") : crit.growth_rate_per_s > 0 ? "Disturbances grow" : "Disturbances decay"}
                   tone={crit?.growth_rate_per_s == null ? undefined : res.results.status} />
               </div>
 

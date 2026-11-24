@@ -14,10 +14,11 @@ export class ApiFailure extends Error {
   ) { super(message); }
 }
 
-/** Client-side ceiling, a little above the server's own SOLVE_TIMEOUT_S (60 s). */
+/** Client-side ceiling, a little above the server's own SOLVE_TIMEOUT_S (50 s). */
 export const CLIENT_TIMEOUT_MS = 90_000;
 
 const UNREACHABLE = "The simulator could not be reached. Check your connection and try again.";
+const TOO_SLOW = "The calculation took too long and was stopped. Try a smaller container or a weaker forcing.";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
@@ -30,6 +31,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (res.ok) return res.json() as Promise<T>;
   let body: Partial<ApiError> = {};
   try { body = await res.json(); } catch { /* non-JSON error page, e.g. the dev proxy */ }
+  // the hosting platform answers a run that hits its time limit with a plain 504 page
+  if (!body.code && res.status === 504) throw new ApiFailure(TOO_SLOW, "TIMEOUT");
   if (!body.code && res.status >= 500) throw new ApiFailure(UNREACHABLE, "UNREACHABLE");
   throw new ApiFailure(
     body.message ?? "The calculation could not be completed.",
