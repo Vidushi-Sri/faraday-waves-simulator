@@ -1,18 +1,18 @@
 // ONE colour system for the whole app. Mirrors the CSS variables in app.scss.
 //
-// Stable and unstable are outcomes, not good/bad: Faraday waves are often the
-// goal of the experiment. So they are not red/green (Carbon keeps red for
-// failures that need attention):
-//   unstable -> IBM Blue  waves form (the wave line of the logo)
-//   stable   -> gray      the surface stays flat
+// Status follows Carbon's documented status semantics:
+//   unstable -> soft red    past onset, disturbances grow
+//   stable   -> soft green  disturbances decay
+// Softened (Carbon 50 / pastel 30) so neither reads as an alarm or a success:
+// whether waves are wanted depends on the experiment.
 //   no_critical_mode_found -> gray (no claim either way)
-// Colour is never the only cue: every state also has a pictogram and a word.
+// Colour is never the only cue: every status also has an icon and a word.
 //
 // Data colours (response types) are categorical and deliberately NOT red or
 // green, so a "type" is never misread as a "status". They match the solver's
 // own plot_tongues colours in hue family: subharmonic solid, harmonic dashed.
-export const STATUS_TEXT = { unstable: "#0f62fe", stable: "#393939", no_critical_mode_found: "#525252", pending: "#525252" } as const;
-export const STATUS_FILL = { unstable: "#0f62fe", stable: "#8d8d8d", no_critical_mode_found: "#8d8d8d", pending: "#8d8d8d" } as const;
+export const STATUS_TEXT = { unstable: "#fa4d56", stable: "#24a148", no_critical_mode_found: "#525252", pending: "#525252" } as const;
+export const STATUS_FILL = { unstable: "#fa4d56", stable: "#24a148", no_critical_mode_found: "#8d8d8d", pending: "#8d8d8d" } as const;
 
 export const RESPONSE_COLOR = {
   subharmonic: "#6929c4", // Carbon purple 70

@@ -4,11 +4,10 @@ import { fmt, ratioLabel, statusOutcome, statusShort, verdictConsequence } from 
 
 /**
  * The answer, read in under five seconds:
- *   1. the verdict (Stable / Unstable) in plain type, with what it means underneath
+ *   1. verdict word in the status colour (the only large coloured type), with
+ *      what it means in plain words underneath
  *   2. onset threshold vs applied acceleration, same size so they compare
- *   3. the regime line: the surface drawn flat below a_c and as a wave above it,
- *      with the applied a marked on it, so "where waves form" is a picture
- * Neither outcome is styled as an alarm or a success: waves are often the goal.
+ *   3. a bar placing applied a against the threshold, with the margin in words
  * Everything comes from the response (applied a is the backend's value, which
  * is derived server-side when the input was a displacement).
  */
@@ -17,8 +16,7 @@ export function VerdictHero({ r, updating }: { r: CriticalResponse; updating?: b
   const ac = res.critical_acceleration_m_s2;
   const applied = res.applied_acceleration_m_s2;
   const max = Math.max(ac ?? 0, applied) * 1.25 || 1;
-  const frac = (v: number) => Math.min(100, (v / max) * 100);
-  const pct = (v: number) => `${frac(v)}%`;
+  const pct = (v: number) => `${Math.min(100, (v / max) * 100)}%`;
 
   return (
     <section className={`hero st--${res.status}`} aria-labelledby="verdict-title">
@@ -44,22 +42,16 @@ export function VerdictHero({ r, updating }: { r: CriticalResponse; updating?: b
           <span className="hero__value">{fmt(applied)}<span className="hero__unit">m/s²</span></span>
         </div>
         {ac != null && (
-          <figure className="regime" aria-label={`Applied acceleration ${ratioLabel(r)}`}>
-            <div className="regime__track" aria-hidden="true">
-              <div className="regime__flat" style={{ width: pct(ac) }} />
-              <div className="regime__waves" style={{ left: pct(ac) }} />
-              <div className="regime__ac" style={{ left: pct(ac) }} />
-              <div className="regime__a" style={{ left: pct(applied) }}>
-                <span className="regime__a-label">a</span>
-              </div>
+          <div className="meter">
+            <div className="meter__track" aria-hidden="true">
+              <div className="meter__fill" style={{ width: pct(applied) }} />
+              <div className="meter__tick" style={{ left: pct(ac) }} />
             </div>
-            <div className="regime__labels" aria-hidden="true">
-              {frac(ac) > 22 && <span className="regime__lab-flat">flat surface</span>}
-              <span className="regime__lab-ac" style={{ left: pct(ac) }}>a<sub>c</sub></span>
-              <span className="regime__lab-waves">Faraday waves</span>
+            <div className="meter__legend">
+              <span className="meter__ratio">{ratioLabel(r)}</span>
+              <span className="meter__key" aria-hidden="true"><span className="meter__tick-key" /><span>a<sub>c</sub></span></span>
             </div>
-            <figcaption className="regime__ratio">Applied a is {ratioLabel(r)}.</figcaption>
-          </figure>
+          </div>
         )}
       </div>
     </section>
