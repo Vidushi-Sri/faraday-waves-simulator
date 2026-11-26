@@ -103,7 +103,7 @@ export function StabilityChart({
       { label: "Applied acceleration", swatch: lineSw("#161616", "5 3", 1) },
       ...(crit ? [{ label: finite ? "Critical mode" : "Onset threshold", swatch: (sg: SG) => { sg.append("circle").attr("cx", 11).attr("r", 5).attr("fill", "#fff").attr("stroke", "#161616").attr("stroke-width", 1.5); } }] : []),
       ...(finite ? [{ label: "Allowed mode", swatch: dotSw("#fff", "#6f6f6f") }] : []),
-      ...(finite && anyUnstableMode ? [{ label: "Unstable mode", swatch: dotSw(hot, hot) }] : []),
+      ...(finite && anyUnstableMode ? [{ label: "Growing mode (unstable)", swatch: dotSw(hot, hot) }] : []),
       ...(!finite && bands.length ? [{ label: "Growing wavenumbers", swatch: (sg: SG) => { sg.append("line").attr("x1", 2).attr("x2", 20).attr("stroke", hot).attr("stroke-width", 2); [2, 20].forEach(cx => sg.append("circle").attr("cx", cx).attr("r", 2.5).attr("fill", "#fff").attr("stroke", hot).attr("stroke-width", 1.5)); } }] : []),
     ];
     const legend = layoutLegend(g, entries, 16, W - 16);

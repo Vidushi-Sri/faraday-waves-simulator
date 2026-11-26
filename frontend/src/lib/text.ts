@@ -33,9 +33,16 @@ export const modeLabel = (label: string) =>
 export const responseWord = (r: Mode["response"]) => (r === "subharmonic" ? "Subharmonic" : "Harmonic");
 export const responseFreq = (r: Mode["response"]) => (r === "subharmonic" ? "f/2" : "f");
 
+/** Headline: the scientific verdict. Shown in a neutral colour: unstable is an outcome, not a warning. */
 export function statusShort(r: CriticalResponse): string {
   return r.results.status === "unstable" ? "Unstable"
     : r.results.status === "stable" ? "Stable" : "No threshold found";
+}
+
+/** Plain-language line under the headline: what the surface does. */
+export function statusOutcome(r: CriticalResponse): string {
+  return r.results.status === "unstable" ? "Faraday waves form"
+    : r.results.status === "stable" ? "No Faraday waves: the surface stays flat" : "";
 }
 
 export function verdictConsequence(r: CriticalResponse): string {
@@ -44,10 +51,10 @@ export function verdictConsequence(r: CriticalResponse): string {
     return "No unstable mode was found in the searched wavenumber range.";
   const q = r.results.ratio_applied_to_critical ?? 0;
   if (r.results.status === "unstable" && q > 5)
-    return "The surface is unstable, but the forcing is far above onset: the motion is strongly nonlinear, which linear theory does not describe. Check the input units.";
+    return "The forcing is far above onset: the motion is strongly nonlinear, which linear theory does not describe. Check the input units.";
   if (r.results.status === "unstable")
-    return "The applied acceleration exceeds the onset threshold, so small surface disturbances grow into standing waves.";
-  return "The applied acceleration is below the onset threshold, so small disturbances decay and the surface remains flat.";
+    return `The applied acceleration is above the onset threshold, so small disturbances grow into a standing wave oscillating at ${responseFreq(m.response)} (${+(m.response === "subharmonic" ? r.inputs.frequency_hz / 2 : r.inputs.frequency_hz).toPrecision(4)} Hz).`;
+  return "The applied acceleration is below the onset threshold, so small disturbances die out.";
 }
 
 export function ratioLabel(r: CriticalResponse): string {

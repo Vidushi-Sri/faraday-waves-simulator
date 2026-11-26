@@ -84,7 +84,7 @@ function LowestModes({ r }: { r: CriticalResponse }) {
                 <TableCell className="num">{sig4(m.wavelength_mm)}</TableCell>
                 <TableCell className="num">{sig4(m.critical_acceleration_m_s2)}</TableCell>
                 <TableCell>{responseWord(m.response)} ({m.response === "subharmonic" ? "f/2" : "f"})</TableCell>
-                <TableCell><span className={`state state--${m.unstable ? "unstable" : "stable"}`}>{m.unstable ? "Unstable" : "Stable"}</span></TableCell>
+                <TableCell><span className={`state state--${m.unstable ? "unstable" : "stable"}`}>{m.unstable ? "Grows (unstable)" : "Decays (stable)"}</span></TableCell>
                 <TableCell className="num">{sig4(m.growth_rate_per_s)}</TableCell>
               </TableRow>
             ))}

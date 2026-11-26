@@ -1,14 +1,34 @@
-/** Brand mark: a monoline open container (ink) whose liquid surface has
- *  broken into a standing wave (the one IBM Blue line). Thin strokes, no
- *  fill, no tile: it should read like an instrument label, not an app icon.
- *  The favicon in index.html uses the same artwork. */
-export function Logo({ size = 20 }: { size?: number }) {
+import { useId } from "react";
+
+/** The wave line shared by the logo and the verdict picture: 1.5 wavelengths
+ *  of a standing wave cos(3 pi x / L) across a 20-unit disc. */
+export const MARK_WAVE = "M-1 7.8C1.67 7.8 3.66 12.2 6.33 12.2S11 7.8 13.67 7.8 18.33 12.2 21 12.2";
+
+/** A disc cut by a surface: a standing wave (blue, "waves form") or a flat
+ *  line (gray, "surface stays flat"). The brand mark is the wave version;
+ *  the verdict uses both so the logo and the result read as one system. */
+export function SurfaceMark({ size = 20, state = "waves", className }: {
+  size?: number; state?: "waves" | "flat" | "none"; className?: string;
+}) {
+  const id = useId().replace(/:/g, "");
+  const waves = state === "waves";
+  const line = waves ? MARK_WAVE : "M-1 10H21";
+  const [top, bottom] = waves ? ["#0f62fe", "#0043ce"] : ["#c6c6c6", "#8d8d8d"];
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true" className="logo">
-      <path d="M2.5 5.5V17.5H17.5V5.5" fill="none" stroke="#161616" strokeWidth="1.5" strokeLinecap="square" />
-      <path d="M2.5 10.5C4.5 7.5 6.5 7.5 8.5 10.5S12.5 13.5 14.5 10.5 16.7 8.4 17.5 9.2" fill="none" stroke="#0f62fe" strokeWidth="1.5" />
+    <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true" className={className}>
+      <defs><clipPath id={id}><circle cx="10" cy="10" r="9.5" /></clipPath></defs>
+      <g clipPath={`url(#${id})`}>
+        <rect width="20" height="20" fill={top} />
+        <path d={`${line}L21 21H-1Z`} fill={bottom} />
+        <path d={line} fill="none" stroke="#fff" strokeWidth="1.4" strokeDasharray={state === "none" ? "1.5 1.5" : undefined} />
+      </g>
     </svg>
   );
+}
+
+/** Brand mark: the wave-cut disc. The favicon in index.html uses the same artwork. */
+export function Logo({ size = 20 }: { size?: number }) {
+  return <SurfaceMark size={size} state="waves" className="logo" />;
 }
 
 /* Geometry of the schematic (px). The surface is drawn from the actual mode

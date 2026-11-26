@@ -9,9 +9,11 @@
 :root {
   --ink: #161616; --ink-2: #525252; --ink-3: #6f6f6f;
   --canvas: #ffffff; --surface-1: #f4f4f4; --line: #e0e0e0; --accent: #0f62fe;
-  // status (Carbon semantic); text colours pass WCAG AA on white
-  --st-unstable-text: #da1e28; --st-unstable-fill: #da1e28;
-  --st-stable-text: #198038;   --st-stable-fill: #24a148;
+  // outcome, not alarm: waves forming is often the goal, so neither state is red or green.
+  // unstable = IBM Blue (the wave line of the logo), stable = neutral gray (flat surface).
+  --st-unstable-text: #0f62fe; --st-unstable-fill: #0f62fe;
+  --st-stable-text: #393939;   --st-stable-fill: #8d8d8d;
+  --error: #da1e28; --ok: #24a148;
   --st-no_critical_mode_found-text: #525252; --st-no_critical_mode_found-fill: #8d8d8d;
 }
 @each $s in unstable, stable, no_critical_mode_found {
@@ -42,9 +44,9 @@ body { letter-spacing: 0.16px; }
   font-size: 0.75rem; letter-spacing: 0.32px; color: var(--ink-2); white-space: nowrap;
 }
 .api-status__dot { width: 8px; height: 8px; border-radius: 50%; background: #8d8d8d; }
-.api-status--ok .api-status__dot { background: var(--st-stable-fill); }
-.api-status--down { color: var(--st-unstable-text); font-weight: 600; }
-.api-status--down .api-status__dot { background: var(--st-unstable-fill); }
+.api-status--ok .api-status__dot { background: var(--ok); }
+.api-status--down { color: var(--error); font-weight: 600; }
+.api-status--down .api-status__dot { background: var(--error); }
 .link-btn {
   background: none; border: 0; padding: 0; margin-left: $spacing-02; font: inherit; letter-spacing: inherit;
   color: var(--accent); text-decoration: underline; cursor: pointer;
@@ -149,9 +151,9 @@ body { letter-spacing: 0.16px; }
 // ---- 1. Verdict hero
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); background: var(--canvas); border: 1px solid var(--line); }
 .hero__verdict { padding: $spacing-07 $spacing-06; border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; }
-.hero__status { display: flex; align-items: center; gap: $spacing-04; }
-.hero__icon { fill: var(--st-text); flex: none; }
-.hero__title { font-size: 2rem; font-weight: 400; line-height: 1.25; letter-spacing: 0; color: var(--st-text); margin: 0; }
+.hero__title { font-size: 2rem; font-weight: 400; line-height: 1.25; letter-spacing: 0; color: var(--ink); margin: 0; }
+.hero__outcome { font-size: 1rem; font-weight: 600; color: var(--ink); margin: $spacing-04 0 0; display: flex; align-items: baseline; gap: $spacing-04; flex-wrap: wrap; }
+.hero__rule { font-size: 0.875rem; font-weight: 400; color: var(--ink-2); }
 .hero__explain { font-size: 0.875rem; line-height: 1.43; margin: $spacing-04 0 0; max-width: 46ch; }
 .hero__updating { min-height: 0; margin-top: $spacing-04; }
 .hero__numbers { display: grid; grid-template-columns: 1fr 1fr; column-gap: $spacing-07; row-gap: $spacing-06; padding: $spacing-07 $spacing-06; align-content: center; }
@@ -161,14 +163,30 @@ body { letter-spacing: 0.16px; }
 .hero__unit { font-size: 1rem; font-weight: 400; color: var(--ink-2); margin-left: $spacing-03; }
 sub { font-size: 0.75em; vertical-align: sub; line-height: 0; }
 sup { font-size: 0.7em; vertical-align: super; line-height: 0; }
-.meter { grid-column: 1 / -1; }
-.meter__track { position: relative; height: 8px; background: #e8e8e8; }
-.meter__fill { position: absolute; inset: 0 auto 0 0; background: var(--st-fill); }
-.meter__tick { position: absolute; top: -6px; bottom: -6px; width: 2px; margin-left: -1px; background: var(--ink); }
-.meter__legend { display: flex; justify-content: space-between; align-items: baseline; margin-top: $spacing-04; font-size: 0.75rem; color: var(--ink-2); }
-.meter__ratio { font-size: 0.875rem; font-weight: 600; color: var(--st-text); }
-.meter__key { display: inline-flex; align-items: center; gap: $spacing-03; }
-.meter__tick-key { display: inline-block; width: 2px; height: 12px; background: var(--ink); }
+.regime { grid-column: 1 / -1; margin: $spacing-03 0 0; }
+.regime__track { position: relative; height: 24px; }
+.regime__flat { position: absolute; left: 0; top: 11px; height: 0; border-top: 1.5px solid #8d8d8d; }
+// the surface beyond onset, drawn as a standing wave (repeats along x; one period = 16 px)
+.regime__waves {
+  position: absolute; right: 0; top: 2px; height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='20'%3E%3Cpath d='M0 10C5 10 5.5 3 14 3S23 10 28 10' fill='none' stroke='%230f62fe' stroke-width='1.6'/%3E%3Cpath d='M0 10C5 10 5.5 17 14 17S23 10 28 10' fill='none' stroke='%230f62fe' stroke-width='1' stroke-dasharray='2 2.5' opacity='.55'/%3E%3C/svg%3E") repeat-x left center;
+}
+// the regime the applied a falls in is drawn at full strength, the other one recedes
+.st--stable .regime__waves { opacity: 0.35; }
+.st--stable .regime__flat { border-top-color: var(--ink); border-top-width: 2px; }
+.st--unstable .regime__flat { border-top-color: #a8a8a8; }
+.st--stable .regime__lab-flat { color: var(--ink); font-weight: 600; }
+.st--unstable .regime__lab-waves { font-weight: 600; }
+.regime__ac { position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -0.5px; background: var(--ink); }
+.regime__a { position: absolute; top: -14px; width: 0; }
+.regime__a::after { content: ""; position: absolute; left: -5px; top: 10px; border: 5px solid transparent; border-top: 7px solid var(--ink); }
+.regime__a-label { position: absolute; left: 0; top: -4px; transform: translateX(-50%); font-size: 0.75rem; font-style: italic; color: var(--ink); }
+.regime__labels { position: relative; height: 1rem; margin-top: $spacing-02; font-size: 0.75rem; color: var(--ink-2); }
+.regime__labels span { position: absolute; top: 0; white-space: nowrap; }
+.regime__lab-flat { left: 0; }
+.regime__lab-ac { transform: translateX(-50%); color: var(--ink); }
+.regime__lab-waves { right: 0; color: #0043ce; }
+.regime__ratio { margin-top: $spacing-04; font-size: 0.875rem; color: var(--ink); }
 
 // ---- 2. Stats
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-top: 0; }
@@ -176,8 +194,6 @@ sup { font-size: 0.7em; vertical-align: super; line-height: 0; }
 .stat { background: var(--canvas); padding: $spacing-05 $spacing-06; min-width: 0; }
 .stat__label { font-size: 0.75rem; letter-spacing: 0.32px; color: var(--ink-2); }
 .stat__value { font-size: 1.5rem; font-weight: 400; line-height: 1.33; margin-top: $spacing-02; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.stat__value--unstable { color: var(--st-unstable-text); }
-.stat__value--stable { color: var(--st-stable-text); }
 .stat__unit { font-size: 0.875rem; color: var(--ink-2); margin-left: $spacing-02; }
 .stat__meta { font-size: 0.75rem; letter-spacing: 0.32px; color: var(--ink-2); margin-top: $spacing-02; }
 
