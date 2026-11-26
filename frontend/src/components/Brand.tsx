@@ -1,14 +1,19 @@
-import { MARK_PNG } from "../lib/markImage";
+/* Brand mark: side view of a real result. The critical mode of a 12 mm channel
+ * holding the reference fluid (60 Hz, h = 2.9 mm) is m = 3, a_c = 91.20 m/s^2:
+ * eta(x) = cos(3 pi x / L), three half-wavelengths across the channel, meeting
+ * both walls with zero slope as the free-slip wall condition requires. The
+ * surface stays inside the walls. Amplitude is drawn large for legibility
+ * (linear theory fixes the shape, not the height). public/favicon.svg matches. */
+const MARK_SURFACE = "M3.50 7.60L3.86 7.67L4.22 7.89L4.58 8.24L4.94 8.70L5.31 9.23L5.67 9.80L6.03 10.37L6.39 10.90L6.75 11.36L7.11 11.71L7.47 11.93L7.83 12.00L8.19 11.93L8.56 11.71L8.92 11.36L9.28 10.90L9.64 10.37L10.00 9.80L10.36 9.23L10.72 8.70L11.08 8.24L11.44 7.89L11.81 7.67L12.17 7.60L12.53 7.67L12.89 7.89L13.25 8.24L13.61 8.70L13.97 9.23L14.33 9.80L14.69 10.37L15.06 10.90L15.42 11.36L15.78 11.71L16.14 11.93L16.50 12.00";
+const MARK_LIQUID = "M3.50 7.60L3.86 7.67L4.22 7.89L4.58 8.24L4.94 8.70L5.31 9.23L5.67 9.80L6.03 10.37L6.39 10.90L6.75 11.36L7.11 11.71L7.47 11.93L7.83 12.00L8.19 11.93L8.56 11.71L8.92 11.36L9.28 10.90L9.64 10.37L10.00 9.80L10.36 9.23L10.72 8.70L11.08 8.24L11.44 7.89L11.81 7.67L12.17 7.60L12.53 7.67L12.89 7.89L13.25 8.24L13.61 8.70L13.97 9.23L14.33 9.80L14.69 10.37L15.06 10.90L15.42 11.36L15.78 11.71L16.14 11.93L16.50 12.00L16.5 16.5L3.5 16.5Z";
+const MARK_WALLS = "M2.75 3V17.25H17.25V3";
 
-/** Brand mark: the top view of a real result. The critical mode (2, 2) of an
- *  11.4 mm square box holding the reference fluid (60 Hz, h = 2.9 mm), drawn
- *  with the app's own elevation colours (red raised, blue lowered); the frame
- *  is the box wall. The favicon (public/favicon.png) is the same image. */
 export function Logo({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 20 20" aria-hidden="true" className="logo">
-      <image x="1" y="1" width="18" height="18" preserveAspectRatio="none" href={MARK_PNG} />
-      <rect x="1" y="1" width="18" height="18" fill="none" stroke="#161616" strokeWidth="1.2" />
+      <path d={MARK_LIQUID} fill="#0f62fe" />
+      <path d={MARK_SURFACE} fill="none" stroke="#0043ce" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d={MARK_WALLS} fill="none" stroke="#161616" strokeWidth="1.5" strokeLinecap="square" />
     </svg>
   );
 }
