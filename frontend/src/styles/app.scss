@@ -11,9 +11,9 @@
   --canvas: #ffffff; --surface-1: #f4f4f4; --line: #e0e0e0; --accent: #0f62fe;
   // status (Carbon semantic); text colours pass WCAG AA on white
   // softened on purpose: stable is not always "good" nor unstable "bad" (waves are often the goal).
-  // text = Carbon red/green 50 (3.35:1, used only at large sizes); fill = pastel red/green 30.
-  --st-unstable-text: #fa4d56; --st-unstable-fill: #ffb3b8;
-  --st-stable-text: #24a148;   --st-stable-fill: #6fdc8c;
+  // Carbon red/green 50 for both text and fill: softer than 60/70, not pastel (3.35:1, large text only).
+  --st-unstable-text: #fa4d56; --st-unstable-fill: #fa4d56;
+  --st-stable-text: #24a148;   --st-stable-fill: #24a148;
   --error: #da1e28; --ok: #24a148;   // real errors stay solid red
   --st-no_critical_mode_found-text: #525252; --st-no_critical_mode_found-fill: #8d8d8d;
 }
