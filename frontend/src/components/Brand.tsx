@@ -3,15 +3,19 @@
  * screen. It is a real result: the critical mode of a 12 mm channel holding the
  * reference fluid (60 Hz, h = 2.9 mm) is m = 3, a_c = 91.20 m/s^2, so the surface
  * is eta(x) = cos(3 pi x / L): three half-wavelengths, meeting the inner face of
- * each wall with zero slope (free-slip wall condition). public/favicon.svg matches. */
+ * each wall with zero slope (free-slip wall condition), shown at two instants
+ * half a period apart (solid and dashed). public/favicon.svg matches. */
 const MARK_WALLS = "M5 6V27H27V6";
-const MARK_SURFACE = "M6.00 11.80L6.56 11.91L7.11 12.23L7.67 12.74L8.22 13.40L8.78 14.17L9.33 15.00L9.89 15.83L10.44 16.60L11.00 17.26L11.56 17.77L12.11 18.09L12.67 18.20L13.22 18.09L13.78 17.77L14.33 17.26L14.89 16.60L15.44 15.83L16.00 15.00L16.56 14.17L17.11 13.40L17.67 12.74L18.22 12.23L18.78 11.91L19.33 11.80L19.89 11.91L20.44 12.23L21.00 12.74L21.56 13.40L22.11 14.17L22.67 15.00L23.22 15.83L23.78 16.60L24.33 17.26L24.89 17.77L25.44 18.09L26.00 18.20";
+const MARK_SURFACE = "M6.00 13.00L6.56 13.10L7.11 13.40L7.67 13.88L8.22 14.50L8.78 15.22L9.33 16.00L9.89 16.78L10.44 17.50L11.00 18.12L11.56 18.60L12.11 18.90L12.67 19.00L13.22 18.90L13.78 18.60L14.33 18.12L14.89 17.50L15.44 16.78L16.00 16.00L16.56 15.22L17.11 14.50L17.67 13.88L18.22 13.40L18.78 13.10L19.33 13.00L19.89 13.10L20.44 13.40L21.00 13.88L21.56 14.50L22.11 15.22L22.67 16.00L23.22 16.78L23.78 17.50L24.33 18.12L24.89 18.60L25.44 18.90L26.00 19.00";
+/** The same standing wave half a period later (as in the start-screen schematic). */
+const MARK_SURFACE_LATER = "M6.00 19.00L6.56 18.90L7.11 18.60L7.67 18.12L8.22 17.50L8.78 16.78L9.33 16.00L9.89 15.22L10.44 14.50L11.00 13.88L11.56 13.40L12.11 13.10L12.67 13.00L13.22 13.10L13.78 13.40L14.33 13.88L14.89 14.50L15.44 15.22L16.00 16.00L16.56 16.78L17.11 17.50L17.67 18.12L18.22 18.60L18.78 18.90L19.33 19.00L19.89 18.90L20.44 18.60L21.00 18.12L21.56 17.50L22.11 16.78L22.67 16.00L23.22 15.22L23.78 14.50L24.33 13.88L24.89 13.40L25.44 13.10L26.00 13.00";
 
 export function Logo({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" className="logo"
       fill="none" stroke="#0f62fe" strokeWidth="2">
       <path d={MARK_WALLS} strokeLinecap="square" />
+      <path d={MARK_SURFACE_LATER} strokeWidth="1.3" strokeDasharray="2 1.6" opacity="0.75" />
       <path d={MARK_SURFACE} strokeLinejoin="round" />
     </svg>
   );
