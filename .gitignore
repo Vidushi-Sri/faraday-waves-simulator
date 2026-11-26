@@ -17,3 +17,5 @@ kumar96.pdf
 full_output*.txt
 faraday_floquet_backup.py
 horizontal_cylinder_base.py
+.vercel
+.env*
