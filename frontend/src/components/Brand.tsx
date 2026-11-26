@@ -1,22 +1,27 @@
-/* Brand mark, drawn like the Carbon icons used across the app (32-unit grid,
- * 2-unit single-colour strokes, no fill) and like the schematic on the start
- * screen. It is a real result: the critical mode of a 12 mm channel holding the
- * reference fluid (60 Hz, h = 2.9 mm) is m = 3, a_c = 91.20 m/s^2, so the surface
- * is eta(x) = cos(3 pi x / L): three half-wavelengths, meeting the inner face of
- * each wall with zero slope (free-slip wall condition), shown at two instants
- * half a period apart (solid and dashed). public/favicon.svg matches. */
+import { useId } from "react";
+
+/* Brand mark (32-unit grid, like the Carbon icons used across the app). It is a
+ * real result: the critical mode of a 12 mm channel holding the reference fluid
+ * (60 Hz, h = 2.9 mm) is m = 3, a_c = 91.20 m/s^2, so the surface is
+ * eta(x) = cos(3 pi x / L): three half-wavelengths, meeting the inner face of each
+ * wall with zero slope (free-slip wall condition). Black container, blue surface,
+ * pale liquid below. Amplitude is drawn large for legibility. public/favicon.svg matches. */
 const MARK_WALLS = "M5 6V27H27V6";
-const MARK_SURFACE = "M6.00 13.00L6.56 13.10L7.11 13.40L7.67 13.88L8.22 14.50L8.78 15.22L9.33 16.00L9.89 16.78L10.44 17.50L11.00 18.12L11.56 18.60L12.11 18.90L12.67 19.00L13.22 18.90L13.78 18.60L14.33 18.12L14.89 17.50L15.44 16.78L16.00 16.00L16.56 15.22L17.11 14.50L17.67 13.88L18.22 13.40L18.78 13.10L19.33 13.00L19.89 13.10L20.44 13.40L21.00 13.88L21.56 14.50L22.11 15.22L22.67 16.00L23.22 16.78L23.78 17.50L24.33 18.12L24.89 18.60L25.44 18.90L26.00 19.00";
-/** The same standing wave half a period later (as in the start-screen schematic). */
-const MARK_SURFACE_LATER = "M6.00 19.00L6.56 18.90L7.11 18.60L7.67 18.12L8.22 17.50L8.78 16.78L9.33 16.00L9.89 15.22L10.44 14.50L11.00 13.88L11.56 13.40L12.11 13.10L12.67 13.00L13.22 13.10L13.78 13.40L14.33 13.88L14.89 14.50L15.44 15.22L16.00 16.00L16.56 16.78L17.11 17.50L17.67 18.12L18.22 18.60L18.78 18.90L19.33 19.00L19.89 18.90L20.44 18.60L21.00 18.12L21.56 17.50L22.11 16.78L22.67 16.00L23.22 15.22L23.78 14.50L24.33 13.88L24.89 13.40L25.44 13.10L26.00 13.00";
+const MARK_SURFACE = "M6.10 12.50L6.51 12.56L6.92 12.73L7.34 13.01L7.75 13.38L8.16 13.83L8.57 14.35L8.99 14.91L9.40 15.50L9.81 16.09L10.22 16.65L10.64 17.17L11.05 17.62L11.46 17.99L11.87 18.27L12.29 18.44L12.70 18.50L13.11 18.44L13.52 18.27L13.94 17.99L14.35 17.62L14.76 17.17L15.17 16.65L15.59 16.09L16.00 15.50L16.41 14.91L16.82 14.35L17.24 13.83L17.65 13.38L18.06 13.01L18.47 12.73L18.89 12.56L19.30 12.50L19.71 12.56L20.12 12.73L20.54 13.01L20.95 13.38L21.36 13.83L21.77 14.35L22.19 14.91L22.60 15.50L23.01 16.09L23.42 16.65L23.84 17.17L24.25 17.62L24.66 17.99L25.07 18.27L25.49 18.44L25.90 18.50";
+const MARK_LIQUID = "M6.10 12.50L6.51 12.56L6.92 12.73L7.34 13.01L7.75 13.38L8.16 13.83L8.57 14.35L8.99 14.91L9.40 15.50L9.81 16.09L10.22 16.65L10.64 17.17L11.05 17.62L11.46 17.99L11.87 18.27L12.29 18.44L12.70 18.50L13.11 18.44L13.52 18.27L13.94 17.99L14.35 17.62L14.76 17.17L15.17 16.65L15.59 16.09L16.00 15.50L16.41 14.91L16.82 14.35L17.24 13.83L17.65 13.38L18.06 13.01L18.47 12.73L18.89 12.56L19.30 12.50L19.71 12.56L20.12 12.73L20.54 13.01L20.95 13.38L21.36 13.83L21.77 14.35L22.19 14.91L22.60 15.50L23.01 16.09L23.42 16.65L23.84 17.17L24.25 17.62L24.66 17.99L25.07 18.27L25.49 18.44L25.90 18.50L25.90 25.90L6.10 25.90Z";
 
 export function Logo({ size = 20 }: { size?: number }) {
+  const id = `mark-${useId().replace(/:/g, "")}`;
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" className="logo"
-      fill="none" stroke="#0f62fe" strokeWidth="2">
-      <path d={MARK_WALLS} strokeLinecap="square" />
-      <path d={MARK_SURFACE_LATER} strokeWidth="1.3" strokeDasharray="2 1.6" opacity="0.75" />
-      <path d={MARK_SURFACE} strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" className="logo" fill="none">
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a6c8ff" /><stop offset="1" stopColor="#edf5ff" />
+        </linearGradient>
+      </defs>
+      <path d={MARK_LIQUID} fill={`url(#${id})`} />
+      <path d={MARK_SURFACE} stroke="#0f62fe" strokeWidth="2.2" strokeLinejoin="round" />
+      <path d={MARK_WALLS} stroke="#161616" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
