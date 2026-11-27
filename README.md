@@ -2,6 +2,8 @@
 
 A Python-based project for studying Faraday-wave instability in vertically vibrated liquid containers, using linear viscous Floquet theory and numerical analysis.
 
+**Live app:** https://faraday-waves-simulator-murex.vercel.app
+
 The project currently contains two main development tracks:
 
 - **Phase 1:** Linear Faraday instability analysis for flat-bottom containers, based on Kumar (1996).
