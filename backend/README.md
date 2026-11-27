@@ -31,7 +31,7 @@ Environment variables (optional):
 | Variable           | Default                                         | Meaning                        |
 | ------------------ | ----------------------------------------------- | ------------------------------ |
 | `FRONTEND_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173`   | exact CORS origins, comma list |
-| `SOLVE_TIMEOUT_S`  | `60`                                            | per-request solver time limit  |
+| `SOLVE_TIMEOUT_S`  | `50`                                            | per-request solver time limit  |
 
 ## Endpoints
 
